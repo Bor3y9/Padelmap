@@ -1,1 +1,1 @@
-export * from "./task.interface";
+export * from "./club.interface";

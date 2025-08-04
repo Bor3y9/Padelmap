@@ -5,7 +5,7 @@ import cors from "cors";
 
 export const app = express();
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use("/api/v1", router);

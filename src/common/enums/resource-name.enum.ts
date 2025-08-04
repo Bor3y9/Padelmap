@@ -1,3 +1,4 @@
 export enum ResourceName {
-  Ground = "Ground",
+  Club = "Club",
+  Court = "Court",
 }

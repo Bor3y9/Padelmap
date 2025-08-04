@@ -1,10 +1,10 @@
 import { HTTPStatusCode } from "../common/enums";
-import { ITaskAtr, ITaskCreationAtr } from "../common/interfaces";
-import { TaskService } from "../services/task.service";
+import { IClubAtr, IClubCreationAtr } from "../common/interfaces";
+import { TaskService } from "../services/club.service";
 import { Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 
-export class TaskController {
+export class ClubController {
   constructor(private readonly service: TaskService = new TaskService()) {}
 
   private getList = asyncHandler(async (req: Request, res: Response) => {
