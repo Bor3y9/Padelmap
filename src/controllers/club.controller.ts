@@ -1,71 +1,71 @@
 import { HTTPStatusCode } from "../common/enums";
 import { IClubAtr, IClubCreationAtr } from "../common/interfaces";
-import { TaskService } from "../services/club.service";
+import { ClubService } from "../services/club.service";
 import { Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 
 export class ClubController {
-  constructor(private readonly service: TaskService = new TaskService()) {}
+  constructor(private readonly service: ClubService = new ClubService()) {}
 
   private getList = asyncHandler(async (req: Request, res: Response) => {
-    const tasks = await this.service.list();
+    const clubs = await this.service.list();
 
     res.status(HTTPStatusCode.OK).json({
-      data: tasks,
+      data: clubs,
     });
   });
 
   private getById = asyncHandler(
     async (req: Request<{ id: string }>, res: Response) => {
       const { id } = req.params;
-      const task = await this.service.getById(id);
+      const club = await this.service.getById(id);
 
-      if (!task) {
+      if (!club) {
         res.status(HTTPStatusCode.NotFound).json({
-          error: `Task with id ${id} not found`,
+          error: `Club with id ${id} not found`,
         });
         return;
       }
 
       res.status(HTTPStatusCode.OK).json({
-        data: task,
+        data: club,
       });
     }
   );
 
   private postCreate = asyncHandler(
-    async (req: Request<{}, {}, ITaskCreationAtr>, res: Response) => {
-      const newTask = await this.service.createOne(req.body);
-      if (!newTask) {
+    async (req: Request<{}, {}, IClubCreationAtr>, res: Response) => {
+      const newClub = await this.service.createOne(req.body);
+      if (!newClub) {
         res.status(HTTPStatusCode.BadRequest).json({
-          error: "Failed to create task",
+          error: "Failed to create club",
         });
         return;
       }
 
       res.status(HTTPStatusCode.Created).json({
-        data: newTask,
+        data: newClub,
       });
     }
   );
 
   private patchUpdate = asyncHandler(
     async (
-      req: Request<{ id: string }, {}, Partial<ITaskAtr>>,
+      req: Request<{ id: string }, {}, Partial<IClubAtr>>,
       res: Response
     ) => {
       const { id } = req.params;
-      const updatedTask = await this.service.updateById(id, req.body);
+      const updatedClub = await this.service.updateById(id, req.body);
 
-      if (!updatedTask) {
+      if (!updatedClub) {
         res.status(HTTPStatusCode.NotFound).json({
-          error: `Task with id ${id} not found`,
+          error: `Club with id ${id} not found`,
         });
         return;
       }
 
       res.status(HTTPStatusCode.OK).json({
-        data: updatedTask,
+        data: updatedClub,
       });
     }
   );
