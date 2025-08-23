@@ -1,1 +1,2 @@
-export * from "./task.validation";
+export * from "./club.validation";
+export * from "./court.validation";

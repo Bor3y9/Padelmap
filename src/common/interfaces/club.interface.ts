@@ -3,7 +3,7 @@ export interface IClubCreationAtr {
   location: string;
   contact: {
     phone: string;
-    email: string;
+    email?: string;
   };
 }
 

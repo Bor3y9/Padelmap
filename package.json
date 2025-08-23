@@ -11,13 +11,15 @@
   "description": "",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/morgan": "^1.9.10",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-handler": "^1.2.0",
     "joi": "^17.13.3",
-    "mongoose": "^8.13.0"
+    "mongoose": "^8.13.0",
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

@@ -1,24 +1,24 @@
 import { HTTPStatusCode } from "../common/enums";
-import { IClubAtr, IClubCreationAtr } from "../common/interfaces";
-import { ClubService } from "../services/club.service";
+import { ICourtAtr, ICourtCreationAtr } from "../common/interfaces";
+import { CourtService } from "../services/court.service";
 import { Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 import { validateRequest } from "../middlewares/validation.middleware";
 import {
-  clubCreationSchema,
-  clubUpdateSchema,
+  courtCreationSchema,
+  courtUpdateSchema,
   mongoIdSchema,
 } from "../common/validation";
 
-export class ClubController {
-  constructor(private readonly service: ClubService = new ClubService()) {}
+export class CourtController {
+  constructor(private readonly service: CourtService = new CourtService()) {}
 
   private getList = asyncHandler(async (req: Request, res: Response) => {
-    const clubs = await this.service.list();
+    const courts = await this.service.list();
 
     res.status(HTTPStatusCode.OK).json({
       success: true,
-      data: clubs,
+      data: courts,
     });
   });
 
@@ -26,55 +26,55 @@ export class ClubController {
     async (req: Request<{ id: string }>, res: Response) => {
       const { id } = req.params;
 
-      const club = await this.service.getById(id);
-      if (!club) {
+      const court = await this.service.getById(id);
+      if (!court) {
         res.status(HTTPStatusCode.NotFound).json({
           success: false,
-          message: "Club not found",
-          errors: [{ message: `Club with id ${id} not found` }],
+          message: "Court not found",
+          errors: [{ message: `Court with id ${id} not found` }],
         });
         return;
       }
       res.status(HTTPStatusCode.OK).json({
         success: true,
-        data: club,
+        data: court,
       });
     }
   );
 
   private postCreate = asyncHandler(
-    async (req: Request<{}, {}, IClubCreationAtr>, res: Response) => {
-      const newClub = await this.service.createOne(req.body);
+    async (req: Request<{}, {}, ICourtCreationAtr>, res: Response) => {
+      const newCourt = await this.service.createOne(req.body);
 
       res.status(HTTPStatusCode.Created).json({
         success: true,
-        message: "Club created successfully",
-        data: newClub,
+        message: "Court created successfully",
+        data: newCourt,
       });
     }
   );
 
   private patchUpdate = asyncHandler(
     async (
-      req: Request<{ id: string }, {}, Partial<IClubAtr>>,
+      req: Request<{ id: string }, {}, Partial<ICourtAtr>>,
       res: Response
     ) => {
       const { id } = req.params;
-      const updatedClub = await this.service.updateById(id, req.body);
+      const updatedCourt = await this.service.updateById(id, req.body);
 
-      if (!updatedClub) {
+      if (!updatedCourt) {
         res.status(HTTPStatusCode.NotFound).json({
           success: false,
-          message: "Club not found",
-          errors: [{ message: `Club with id ${id} not found` }],
+          message: "Court not found",
+          errors: [{ message: `Court with id ${id} not found` }],
         });
         return;
       }
 
       res.status(HTTPStatusCode.OK).json({
         success: true,
-        message: "Club updated successfully",
-        data: updatedClub,
+        message: "Court updated successfully",
+        data: updatedCourt,
       });
     }
   );
@@ -82,20 +82,20 @@ export class ClubController {
   private deleteById = asyncHandler(
     async (req: Request<{ id: string }>, res: Response) => {
       const { id } = req.params;
-      const deletedClub = await this.service.deleteById(id);
+      const deletedCourt = await this.service.deleteById(id);
 
-      if (!deletedClub) {
+      if (!deletedCourt) {
         res.status(HTTPStatusCode.NotFound).json({
           success: false,
-          message: "Club not found",
-          errors: [{ message: `Club with id ${id} not found` }],
+          message: "Court not found",
+          errors: [{ message: `Court with id ${id} not found` }],
         });
         return;
       }
 
       res.status(HTTPStatusCode.OK).json({
         success: true,
-        message: "Club deleted successfully",
+        message: "Court deleted successfully",
       });
     }
   );
@@ -107,13 +107,13 @@ export class ClubController {
     router.get("/:id", validateRequest(mongoIdSchema, "params"), this.getById);
     router.post(
       "/",
-      validateRequest(clubCreationSchema, "body"),
+      validateRequest(courtCreationSchema, "body"),
       this.postCreate
     );
     router.patch(
       "/:id",
       validateRequest(mongoIdSchema, "params"),
-      validateRequest(clubUpdateSchema, "body"),
+      validateRequest(courtUpdateSchema, "body"),
       this.patchUpdate
     );
     router.delete(

@@ -5,6 +5,19 @@ import { ClubRepository } from "../repositories/club.repository";
 export class ClubService {
   constructor(private readonly repo: ClubRepository = new ClubRepository()) {}
 
+  private cleanData(data: any): any {
+    const cleaned = { ...data };
+
+    // Remove undefined values from nested objects
+    if (cleaned.contact) {
+      if (cleaned.contact.email === undefined) {
+        delete cleaned.contact.email;
+      }
+    }
+
+    return cleaned;
+  }
+
   async list(): Promise<IClubAtr[]> {
     return this.repo.findAll({});
   }
@@ -14,14 +27,16 @@ export class ClubService {
   }
 
   async createOne(data: IClubCreationAtr): Promise<IClubAtr> {
-    return this.repo.createOne(data);
+    const cleanedData = this.cleanData(data);
+    return this.repo.createOne(cleanedData);
   }
 
   async updateById(
     id: string,
     data: Partial<IClubAtr>
   ): Promise<IClubAtr | null> {
-    return this.repo.updateOne({ _id: id }, data);
+    const cleanedData = this.cleanData(data);
+    return this.repo.updateOne({ _id: id }, cleanedData);
   }
 
   async deleteById(id: string): Promise<IClubAtr | null> {
