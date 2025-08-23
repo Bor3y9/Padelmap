@@ -1,6 +1,5 @@
 import Joi from "joi";
 
-// Club validation schemas
 export const clubCreationSchema = Joi.object({
   name: Joi.string().trim().min(2).max(100).required().messages({
     "string.empty": "Club name is required",
@@ -18,7 +17,6 @@ export const clubCreationSchema = Joi.object({
 
   contact: Joi.object({
     phone: Joi.string()
-      .pattern(/^[\+]?[1-9][\d]{0,15}$/)
       .required()
       .messages({
         "string.pattern.base": "Phone number must be a valid format",
