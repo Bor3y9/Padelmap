@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { RequestValidationError } from "./validation.middleware";
+import {
+  ValidationError,
+  DuplicateFieldError,
+  NotFoundError,
+  AuthenticationError,
+} from "../common/errors";
 import { HTTPStatusCode } from "../common/enums";
 
 export const errorHandler = (
@@ -23,6 +29,46 @@ export const errorHandler = (
       success: false,
       message: "Validation failed",
       errors: err.serialize(),
+    });
+    return;
+  }
+
+  // Handle custom validation errors
+  if (err instanceof ValidationError) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      errors: err.errors,
+    });
+    return;
+  }
+
+  // Handle duplicate field errors
+  if (err instanceof DuplicateFieldError) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      errors: err.errors,
+    });
+    return;
+  }
+
+  // Handle not found errors
+  if (err instanceof NotFoundError) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      errors: err.errors,
+    });
+    return;
+  }
+
+  // Handle authentication errors
+  if (err instanceof AuthenticationError) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      errors: err.errors,
     });
     return;
   }

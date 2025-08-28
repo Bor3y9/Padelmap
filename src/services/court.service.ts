@@ -1,8 +1,12 @@
 import { ICourtAtr, ICourtCreationAtr } from "../common/interfaces";
 import { CourtRepository } from "../repositories/court.repository";
+import { ClubRepository } from "../repositories/club.repository";
 
 export class CourtService {
-  constructor(private readonly repo: CourtRepository = new CourtRepository()) {}
+  constructor(
+    private readonly repo: CourtRepository = new CourtRepository(),
+    private readonly clubRepo: ClubRepository = new ClubRepository()
+  ) {}
 
   async list(): Promise<ICourtAtr[]> {
     return this.repo.findAll({});
@@ -13,6 +17,14 @@ export class CourtService {
   }
 
   async createOne(data: ICourtCreationAtr): Promise<ICourtAtr> {
+    const clubExists = await this.clubRepo.findOne({ _id: data.club });
+    if (!clubExists) {
+      const error = new Error("Club not found");
+      (error as any).statusCode = 404;
+      (error as any).field = "club";
+      throw error;
+    }
+
     return this.repo.createOne(data);
   }
 
@@ -20,6 +32,16 @@ export class CourtService {
     id: string,
     data: Partial<ICourtAtr>
   ): Promise<ICourtAtr | null> {
+    if (data.club) {
+      const clubExists = await this.clubRepo.findOne({ _id: data.club });
+      if (!clubExists) {
+        const error = new Error("Club not found");
+        (error as any).statusCode = 404;
+        (error as any).field = "club";
+        throw error;
+      }
+    }
+
     return this.repo.updateOne({ _id: id }, data);
   }
 

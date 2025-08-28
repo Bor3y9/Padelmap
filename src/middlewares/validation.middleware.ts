@@ -43,7 +43,6 @@ export const validateRequest = (
       return next(new RequestValidationError(validationErrors));
     }
 
-    // Update the request with the validated value (this includes transformations)
     req[property] = value;
 
     next();

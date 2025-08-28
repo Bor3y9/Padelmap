@@ -44,13 +44,30 @@ export class CourtController {
 
   private postCreate = asyncHandler(
     async (req: Request<{}, {}, ICourtCreationAtr>, res: Response) => {
-      const newCourt = await this.service.createOne(req.body);
+      try {
+        const newCourt = await this.service.createOne(req.body);
 
-      res.status(HTTPStatusCode.Created).json({
-        success: true,
-        message: "Court created successfully",
-        data: newCourt,
-      });
+        res.status(HTTPStatusCode.Created).json({
+          success: true,
+          message: "Court created successfully",
+          data: newCourt,
+        });
+      } catch (error: any) {
+        if (error.statusCode === 404 && error.field === "club") {
+          res.status(HTTPStatusCode.NotFound).json({
+            success: false,
+            message: "Club not found",
+            errors: [
+              {
+                field: "club",
+                message: `Club with id ${req.body.club} not found`,
+              },
+            ],
+          });
+          return;
+        }
+        throw error;
+      }
     }
   );
 
@@ -60,22 +77,40 @@ export class CourtController {
       res: Response
     ) => {
       const { id } = req.params;
-      const updatedCourt = await this.service.updateById(id, req.body);
 
-      if (!updatedCourt) {
-        res.status(HTTPStatusCode.NotFound).json({
-          success: false,
-          message: "Court not found",
-          errors: [{ message: `Court with id ${id} not found` }],
+      try {
+        const updatedCourt = await this.service.updateById(id, req.body);
+
+        if (!updatedCourt) {
+          res.status(HTTPStatusCode.NotFound).json({
+            success: false,
+            message: "Court not found",
+            errors: [{ message: `Court with id ${id} not found` }],
+          });
+          return;
+        }
+
+        res.status(HTTPStatusCode.OK).json({
+          success: true,
+          message: "Court updated successfully",
+          data: updatedCourt,
         });
-        return;
+      } catch (error: any) {
+        if (error.statusCode === 404 && error.field === "club") {
+          res.status(HTTPStatusCode.NotFound).json({
+            success: false,
+            message: "Club not found",
+            errors: [
+              {
+                field: "club",
+                message: `Club with id ${req.body.club} not found`,
+              },
+            ],
+          });
+          return;
+        }
+        throw error;
       }
-
-      res.status(HTTPStatusCode.OK).json({
-        success: true,
-        message: "Court updated successfully",
-        data: updatedCourt,
-      });
     }
   );
 

@@ -6,11 +6,17 @@ export class CourtRepository {
   constructor() {}
 
   async findAll(query: FilterQuery<ICourtAtr>): Promise<ICourtAtr[]> {
-    return CourtModel.find(query).populate("club");
+    return CourtModel.find(query).populate({
+      path: "club",
+      select: "name",
+    });
   }
 
   async findOne(query: FilterQuery<ICourtAtr>): Promise<ICourtAtr | null> {
-    return CourtModel.findOne(query).populate("club");
+    return CourtModel.findOne(query).populate({
+      path: "club",
+      select: "name",
+    });
   }
 
   async createOne(data: ICourtCreationAtr): Promise<ICourtAtr> {

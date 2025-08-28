@@ -4,7 +4,7 @@ import { ResourceName, CourtStatus } from "../common/enums";
 
 const courtSchema = new Schema<ICourtAtr>(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     openingHours: {
       start: { type: String, required: true },
       end: { type: String, required: true },
