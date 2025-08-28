@@ -9,8 +9,11 @@ import {
   clubUpdateSchema,
   mongoIdSchema,
 } from "../common/validation";
+import { AuthHandler } from "../middlewares/auth-handler";
 
 export class ClubController {
+  private authHandler = new AuthHandler();
+
   constructor(private readonly service: ClubService = new ClubService()) {}
 
   private getList = asyncHandler(async (req: Request, res: Response) => {
@@ -103,21 +106,27 @@ export class ClubController {
   loadRoutes(): Router {
     const router = Router();
 
+    // Public routes (anyone can view clubs)
     router.get("/", this.getList);
     router.get("/:id", validateRequest(mongoIdSchema, "params"), this.getById);
+
+    // Protected routes (authentication required for modifications)
     router.post(
       "/",
+      this.authHandler.protect,
       validateRequest(clubCreationSchema, "body"),
       this.postCreate
     );
     router.patch(
       "/:id",
+      this.authHandler.protect,
       validateRequest(mongoIdSchema, "params"),
       validateRequest(clubUpdateSchema, "body"),
       this.patchUpdate
     );
     router.delete(
       "/:id",
+      this.authHandler.protect,
       validateRequest(mongoIdSchema, "params"),
       this.deleteById
     );

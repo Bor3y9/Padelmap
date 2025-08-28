@@ -60,7 +60,6 @@ export class UserService {
       }
     );
 
-    // Remove password from response
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     return { user: userWithoutPassword, token };

@@ -9,8 +9,11 @@ import {
   courtUpdateSchema,
   mongoIdSchema,
 } from "../common/validation";
+import { AuthHandler } from "../middlewares/auth-handler";
 
 export class CourtController {
+  private authHandler = new AuthHandler();
+
   constructor(private readonly service: CourtService = new CourtService()) {}
 
   private getList = asyncHandler(async (req: Request, res: Response) => {
@@ -138,21 +141,27 @@ export class CourtController {
   loadRoutes(): Router {
     const router = Router();
 
+    // Public routes (anyone can view courts)
     router.get("/", this.getList);
     router.get("/:id", validateRequest(mongoIdSchema, "params"), this.getById);
+
+    // Protected routes (authentication required for modifications)
     router.post(
       "/",
+      this.authHandler.protect,
       validateRequest(courtCreationSchema, "body"),
       this.postCreate
     );
     router.patch(
       "/:id",
+      this.authHandler.protect,
       validateRequest(mongoIdSchema, "params"),
       validateRequest(courtUpdateSchema, "body"),
       this.patchUpdate
     );
     router.delete(
       "/:id",
+      this.authHandler.protect,
       validateRequest(mongoIdSchema, "params"),
       this.deleteById
     );

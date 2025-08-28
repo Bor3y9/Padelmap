@@ -10,8 +10,11 @@ import { UserService } from "../services/user.service";
 import { Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 import { validateRequest } from "../middlewares/validation.middleware";
+import { AuthHandler } from "../middlewares/auth-handler";
 
 export class UserController {
+  private authHandler = new AuthHandler();
+
   constructor(private readonly service: UserService = new UserService()) {}
 
   private getAllUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -86,27 +89,24 @@ export class UserController {
   loadRoutes() {
     const router = Router();
 
-    // Get all users
-    router.get("/", this.getAllUsers);
-
-    // Register new user with validation
+    // Public routes (no authentication required)
     router.post(
       "/register",
       validateRequest(registerUserSchema),
       this.registerUser
     );
-
-    // Login user with validation
     router.post("/login", validateRequest(loginUserSchema), this.loginUser);
 
-    // Get user by ID
-    router.get("/:id", this.getUserById);
-
-    // Update user with validation
-    router.put("/:id", validateRequest(updateUserSchema), this.updateUser);
-
-    // Delete user
-    router.delete("/:id", this.deleteUser);
+    // Protected routes (authentication required)
+    router.get("/", this.authHandler.protect, this.getAllUsers);
+    router.get("/:id", this.authHandler.protect, this.getUserById);
+    router.put(
+      "/:id",
+      this.authHandler.protect,
+      validateRequest(updateUserSchema),
+      this.updateUser
+    );
+    router.delete("/:id", this.authHandler.protect, this.deleteUser);
 
     return router;
   }
