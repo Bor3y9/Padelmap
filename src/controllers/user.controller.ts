@@ -25,17 +25,6 @@ export class UserController {
     });
   });
 
-  private registerUser = asyncHandler(
-    async (req: Request<{}, {}, IUserCreationAtr>, res: Response) => {
-      const user = await this.service.registerUser(req.body);
-      res.status(HTTPStatusCode.Created).json({
-        success: true,
-        data: user,
-        message: "User registered successfully",
-      });
-    }
-  );
-
   private getUserById = asyncHandler(
     async (req: Request<{ id: string }>, res: Response) => {
       const { id } = req.params;
@@ -74,30 +63,9 @@ export class UserController {
       message: "User deleted successfully",
     });
   });
-
-  private loginUser = asyncHandler(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    const result = await this.service.loginUser(email, password);
-
-    res.status(HTTPStatusCode.OK).json({
-      success: true,
-      data: result,
-      message: "Login successful",
-    });
-  });
-
   loadRoutes() {
     const router = Router();
 
-    // Public routes (no authentication required)
-    router.post(
-      "/register",
-      validateRequest(registerUserSchema),
-      this.registerUser
-    );
-    router.post("/login", validateRequest(loginUserSchema), this.loginUser);
-
-    // Protected routes (authentication required)
     router.get("/", this.authHandler.protect, this.getAllUsers);
     router.get("/:id", this.authHandler.protect, this.getUserById);
     router.put(

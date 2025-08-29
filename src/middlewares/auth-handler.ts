@@ -39,8 +39,10 @@ export class AuthHandler {
           iat: number;
         };
 
+
         // Check if user still exists
         const currentUser = await UserModel.findById(decoded.id);
+
         if (!currentUser) {
           return next(
             new AuthenticationError(
@@ -51,8 +53,10 @@ export class AuthHandler {
 
         // Add user to request object
         req.user = currentUser;
+        console.log("User added to request:", req.user);
         next();
       } catch (error) {
+        console.log("JWT verification error:", error);
         return next(
           new AuthenticationError("Invalid token. Please log in again.")
         );
