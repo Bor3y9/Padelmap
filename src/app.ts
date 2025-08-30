@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { router } from "./router";
 import { errorHandler } from "./middlewares/error-handler";
 import cors from "cors";
@@ -12,7 +12,6 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use("/api/v1", router);
 
-// 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
@@ -21,5 +20,4 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Error handling middleware (must be last)
 app.use(errorHandler);

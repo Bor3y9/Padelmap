@@ -21,6 +21,7 @@ export class CourtController {
 
     res.status(HTTPStatusCode.OK).json({
       success: true,
+      total: courts.length,
       data: courts,
     });
   });
@@ -139,7 +140,7 @@ export class CourtController {
   );
 
   loadRoutes(): Router {
-    const router = Router();
+    const router = Router({ mergeParams: true });
 
     // Public routes (anyone can view courts)
     router.get("/", this.getList);

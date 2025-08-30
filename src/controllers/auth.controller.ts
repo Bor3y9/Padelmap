@@ -54,7 +54,7 @@ export class AuthController {
   });
 
   private changePassword = asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user._id; 
+    const userId = req.user._id;
     const { currentPassword, newPassword } = req.body;
     const result = await this.service.changePassword(
       userId,
@@ -100,7 +100,7 @@ export class AuthController {
     });
   });
 
-  loadRoutes() {
+  loadRoutes(): Router {
     const router = Router();
 
     // Public routes (no authentication required)

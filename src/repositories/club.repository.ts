@@ -6,11 +6,17 @@ export class ClubRepository {
   constructor() {}
 
   async findAll(query: FilterQuery<IClubAtr>): Promise<IClubAtr[]> {
-    return ClubModel.find(query);
+    return ClubModel.find(query).populate({
+      path: "owner",
+      select: "name",
+    });
   }
 
   async findOne(query: FilterQuery<IClubAtr>): Promise<IClubAtr | null> {
-    return ClubModel.findOne(query);
+    return ClubModel.findOne(query).populate({
+      path: "owner",
+      select: "name",
+    });
   }
 
   async createOne(data: IClubCreationAtr): Promise<IClubAtr> {

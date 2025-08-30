@@ -62,7 +62,7 @@ export class UserController {
       message: "User deleted successfully",
     });
   });
-  loadRoutes() {
+  loadRoutes(): Router {
     const router = Router();
 
     router.get(

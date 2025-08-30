@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 export interface IClubCreationAtr {
   name: string;
   location: string;
@@ -5,6 +7,7 @@ export interface IClubCreationAtr {
     phone: string;
     email?: string;
   };
+  owner: ObjectId;
 }
 
 export interface IClubAtr extends IClubCreationAtr {

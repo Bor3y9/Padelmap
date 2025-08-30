@@ -50,14 +50,12 @@ export class AuthService {
   }
 
   async loginUser(email: string, password: string) {
-    // Find user by email
     const user = await this.userRepository.findById({ email });
 
     if (!user) {
       throw new AuthenticationError("Invalid email or password");
     }
 
-    // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -69,7 +67,6 @@ export class AuthService {
       expiresIn: "7d",
     });
 
-    // Remove password from response
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     return {

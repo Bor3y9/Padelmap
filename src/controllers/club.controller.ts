@@ -10,6 +10,7 @@ import {
   mongoIdSchema,
 } from "../common/validation";
 import { AuthHandler } from "../middlewares/auth-handler";
+import { CourtController } from "./court.controller";
 
 export class ClubController {
   private authHandler = new AuthHandler();
@@ -18,9 +19,10 @@ export class ClubController {
 
   private getList = asyncHandler(async (req: Request, res: Response) => {
     const clubs = await this.service.list();
-
+    console.log(clubs);
     res.status(HTTPStatusCode.OK).json({
       success: true,
+      total: clubs.length,
       data: clubs,
     });
   });
@@ -47,7 +49,8 @@ export class ClubController {
 
   private postCreate = asyncHandler(
     async (req: Request<{}, {}, IClubCreationAtr>, res: Response) => {
-      const newClub = await this.service.createOne(req.body);
+      const userId = req.user._id;
+      const newClub = await this.service.createOne(req.body, userId);
 
       res.status(HTTPStatusCode.Created).json({
         success: true,
@@ -105,12 +108,14 @@ export class ClubController {
 
   loadRoutes(): Router {
     const router = Router();
+    const courtController = new CourtController();
+    // nested routes
+    router.use("/:clubId/courts", courtController.loadRoutes());
 
     // Public routes (anyone can view clubs)
     router.get("/", this.getList);
     router.get("/:id", validateRequest(mongoIdSchema, "params"), this.getById);
 
-    // Protected routes (authentication required for modifications)
     router.post(
       "/",
       this.authHandler.protect,

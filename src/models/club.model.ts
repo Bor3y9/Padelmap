@@ -10,6 +10,7 @@ const clubSchema = new Schema<IClubAtr>(
       phone: { type: String, required: true, unique: true },
       email: { type: String, unique: true, sparse: true },
     },
+    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   {
     timestamps: true,

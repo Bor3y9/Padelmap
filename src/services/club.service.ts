@@ -1,14 +1,18 @@
-import { IClubAtr, IClubCreationAtr } from "../common/interfaces";
+import { UserRole } from "../common/enums";
+import { IClubAtr, IClubCreationAtr, IUserAtr } from "../common/interfaces";
 import { ClubRepository } from "../repositories/club.repository";
-// import { taskValidation } from "../common/validation";
+import { UserRepository } from "../repositories/user.repository";
+import { ObjectId } from "mongodb";
 
 export class ClubService {
-  constructor(private readonly repo: ClubRepository = new ClubRepository()) {}
+  constructor(
+    private readonly repo: ClubRepository = new ClubRepository(),
+    private readonly userRepo = new UserRepository()
+  ) {}
 
   private cleanData(data: any): any {
     const cleaned = { ...data };
 
-    // Remove undefined values from nested objects
     if (cleaned.contact) {
       if (cleaned.contact.email === undefined) {
         delete cleaned.contact.email;
@@ -26,9 +30,15 @@ export class ClubService {
     return this.repo.findOne({ _id: id });
   }
 
-  async createOne(data: IClubCreationAtr): Promise<IClubAtr> {
+  async createOne(data: IClubCreationAtr, userId: ObjectId): Promise<IClubAtr> {
     const cleanedData = this.cleanData(data);
-    return this.repo.createOne(cleanedData);
+    const user: IUserAtr | null = await this.userRepo.findById(userId);
+    if (user) {
+      user.role = UserRole.Owner;
+      await this.userRepo.updateOne({ _id: userId }, user);
+    }
+    const club = await this.repo.createOne({ ...cleanedData, owner: userId });
+    return club;
   }
 
   async updateById(
