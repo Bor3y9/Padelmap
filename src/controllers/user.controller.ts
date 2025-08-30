@@ -1,5 +1,4 @@
-import { HTTPStatusCode } from "../common/enums";
-import { IUserCreationAtr, IUserAtr } from "../common/interfaces";
+import { HTTPStatusCode, UserRole } from "../common/enums";
 import {
   registerUserSchema,
   updateUserSchema,
@@ -66,7 +65,12 @@ export class UserController {
   loadRoutes() {
     const router = Router();
 
-    router.get("/", this.authHandler.protect, this.getAllUsers);
+    router.get(
+      "/",
+      this.authHandler.protect,
+      this.authHandler.restrictTo(UserRole.SuperAdmin),
+      this.getAllUsers
+    );
     router.get("/:id", this.authHandler.protect, this.getUserById);
     router.put(
       "/:id",

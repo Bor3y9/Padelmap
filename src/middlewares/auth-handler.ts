@@ -39,7 +39,6 @@ export class AuthHandler {
           iat: number;
         };
 
-
         // Check if user still exists
         const currentUser = await UserModel.findById(decoded.id);
 
@@ -63,4 +62,27 @@ export class AuthHandler {
       }
     }
   );
+
+  restrictTo(...roles: string[]) {
+    return expressAsyncHandler(
+      async (req: Request, res: Response, next: NextFunction) => {
+        if (!req.user) {
+          return next(
+            new AuthenticationError(
+              "You are not logged in! Please log in to get access."
+            )
+          );
+        }
+        if (!roles.includes(req.user.role)) {
+          return next(
+            new AuthenticationError(
+              "You do not have permission to perform this action."
+            )
+          );
+        }
+
+        next();
+      }
+    );
+  }
 }
